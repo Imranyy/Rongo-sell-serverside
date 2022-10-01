@@ -1,23 +1,23 @@
 const mongoose=require('mongoose');
 const schema=mongoose.Schema;
 const itemSchema=new schema({
+    userId:{
+        type:String,
+        require:true
+    },
     image:{
         type:String,
         require:true
     },
-    image1:{
-        type:String,
-        require:true
+    phone:{
+        type:Number,
+        reqiure:true
     },
-    image2:{
+    location:{
         type:String,
         require:true
     },
     title:{
-        type:String,
-        require:true
-    },
-    text:{
         type:String,
         require:true
     },

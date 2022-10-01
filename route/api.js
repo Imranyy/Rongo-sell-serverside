@@ -4,6 +4,7 @@ const {
     postItem,
     getItems,
     getOneItem,
+    getUserItems,
     register,
     login,
     verify,
@@ -16,13 +17,16 @@ const {
 }=require('../controller/itemController')
 
 //post an item
-router.post('/',postItem)
+router.post('/',postItem);
 router.post('/register',register);
 router.post('/login',login);
 router.get('/verify',protect,verify);
 
 //get all items
 router.get('/',getItems); 
+
+//get all user item
+router.post('/getUserItems',getUserItems)
 
 //pay
 router.post('/pay',postPay)

@@ -7,8 +7,8 @@ const jwt=require('jsonwebtoken')
 require('dotenv').config()
 
 const register=async(req,res)=>{
-    const {name,number,password}=req.body;
-      if(!name||!number||!password){
+    const {firstName,lastName,email,number,password,location}=req.body;
+      if(!firstName||!lastName||!number||!password||!location){
         res.status(400).send('Please add fields')
       }
       //check if user exist
@@ -21,15 +21,19 @@ const register=async(req,res)=>{
       const hashedPassword=await bcrypt.hash(password,salt);
       //create user
       const user=await User.create({
-        name,
+        firstName,
+        lastName,
+        email,
         number,
+        location,
         password:hashedPassword
         
       })
       if(user){
         res.status(201).send({
             _id:user.id,
-            name:user.name,
+            name:`${user.firstName} ${user.lastName}`,
+            location:user.location,
             number:user.number,
             token:generateToken(user.id)
         })
@@ -43,7 +47,8 @@ const login=async(req,res)=>{
     if(user&&(await bcrypt.compare(password,user.password))){
     res.send({
         _id:user.id,
-        name:user.name,
+        name:`${user.firstName} ${user.lastName}`,
+        location:user.location,
         number:user.number, 
         token:generateToken(user.id)
     })
@@ -51,6 +56,7 @@ const login=async(req,res)=>{
     res.status(400).send('Invalid Credentials')
     }
 };
+
 const deleteUser=async(req,res)=>{
 
 };
@@ -70,13 +76,11 @@ const protect=async(req,res,next)=>{
   
         }catch (error){
             console.log(error)
-            res.status(401).send('Not Authorised☠☠')
-            throw new Error('Not Authorized')
+            res.status(401).send('Not Authorised☠☠');
         }
     }
     if(!token){
-      res.status(401).send('Not Authorised, No Token Available☠☠')
-        throw new Error('Not Authorized, No Token Available')
+      res.status(401).send('Not Authorised, No Token Available☠☠');
     }
   };
   
@@ -96,23 +100,22 @@ const verify=async(req,res)=>{
 };
 const postItem=async(req,res)=>{
     try {
-        const {image,image1,image2,title,detail,amount,text,free}=req.body;
+        const {userId,image,phone,location,title,detail,amount,free}=req.body;
         const create=await Item.create({
+            userId,
             image,
-            image1,
-            image2,
+            phone,
+            location,
             title,
-            text,
             detail,
             amount,
             free
         })
         res.status(200).send({
             image:create.image,
-            image1:create.image1,
-            image2:create.image2,
+            phone:create.phone,
+            location:create.location,
             title:create.title,
-            text:create.text,
             detail:create.detail,
             amount:create.amount,
             free:create.free,
@@ -144,6 +147,16 @@ const getOneItem=async(req,res)=>{
         res.status(500).send(error.message)
     }
 };
+
+const getUserItems=async(req,res)=>{
+    try {
+        const {userId}=req.body;
+        const item=await Item.find({userId:userId})
+        res.send(item);
+    } catch (error) {
+        res.send(error.message);
+    }
+}
 //patch item
 const patchItem=async(req,res)=>{
     try {
@@ -169,7 +182,7 @@ const deleteItem=async(req,res)=>{
             return res.status(404).send({error:'No such User'})
           } 
           const _deleteItem=await Item.findByIdAndDelete({_id: id})
-          res.send(_deleteItem);
+          res.json('Item Deleted');
     } catch (error) {
         res.send(error.message);
     }
@@ -205,5 +218,6 @@ module.exports={
     deleteUser,
     protect,
     postPay,
-    getPay
+    getPay,
+    getUserItems
 }
