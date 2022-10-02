@@ -79,7 +79,7 @@ const protect=async(req,res)=>{
         }
         }catch (error){
             console.log(error)
-            res.status(401).send(false);
+            res.status(402).send('not authorised!');
         }
   };
   
