@@ -62,26 +62,25 @@ const deleteUser=async(req,res)=>{
 };
 
 //auth Middlerware
-const protect=async(req,res,next)=>{
+const protect=async(req,res)=>{
     let token
-    if(req.headers.authorization&&req.headers.authorization.startsWith('Bearer')){
-        try{
+    try{
+            if(req.headers.authorization&&req.headers.authorization.startsWith('Bearer')){
             //get token from headers
             token=req.headers.authorization.split(' ')[1]
             //verify token
             const decoded=jwt.verify(token,process.env.JWT_SECRET);
             //get user from the token
-            req.user=await User.findById(decoded.id).select('password')
-            next()
-  
+            req.user=await User.findById(decoded.id).select('password');
+            res.status(200).send(true);   
+        }
+        else if(!token){
+          res.status(401).send(false);
+        }
         }catch (error){
             console.log(error)
-            res.status(401).send('Not Authorised☠☠');
+            res.status(401).send(false);
         }
-    }
-    if(!token){
-      res.status(401).send('Not Authorised, No Token Available☠☠');
-    }
   };
   
   //generate token
@@ -91,13 +90,6 @@ const protect=async(req,res,next)=>{
     })
   };
 
-const verify=async(req,res)=>{
-    try {
-        res.status(200).send(true);
-    } catch (error) {
-        res.status(401).send('Not Authorised☠');
-    }
-};
 const postItem=async(req,res)=>{
     try {
         const {userId,image,phone,location,title,detail,amount,free}=req.body;
@@ -212,7 +204,6 @@ module.exports={
     getOneItem,
     register,
     login,
-    verify,
     deleteItem,
     patchItem,
     deleteUser,

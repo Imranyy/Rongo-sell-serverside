@@ -7,7 +7,6 @@ const {
     getUserItems,
     register,
     login,
-    verify,
     deleteItem,
     deleteUser,
     patchItem,
@@ -20,7 +19,7 @@ const {
 router.post('/',postItem);
 router.post('/register',register);
 router.post('/login',login);
-router.get('/verify',protect,verify);
+router.get('/verify',protect);
 
 //get all items
 router.get('/',getItems); 
