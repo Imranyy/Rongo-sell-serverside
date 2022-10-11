@@ -119,7 +119,7 @@ const postItem=async(req,res)=>{
 
 const getItems=async(req,res)=>{
     try {
-        const item=await Item.find({});
+        const item=await Item.find({}).sort({createdAt:-1});
         res.status(200).send(item)
     } catch (error) {
         res.send(error.message)
@@ -143,7 +143,7 @@ const getOneItem=async(req,res)=>{
 const getUserItems=async(req,res)=>{
     try {
         const {userId}=req.body;
-        const item=await Item.find({userId:userId})
+        const item=await Item.find({userId:userId}).sort({createdAt:-1});
         res.send(item);
     } catch (error) {
         res.send(error.message);
